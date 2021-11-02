@@ -1,0 +1,12 @@
+[submodule "opensbi"]
+	path = opensbi
+	url = https://github.com/AlexGhiti/opensbi.git
+[submodule "u-boot"]
+	path = u-boot
+	url = https://github.com/AlexGhiti/u-boot
+[submodule "riscv-linux"]
+	path = riscv-linux
+	url = https://github.com/AlexGhiti/riscv-linux.git
+[submodule "JH7100_ddrinit"]
+	path = JH7100_ddrinit
+	url = https://github.com/AlexGhiti/JH7100_ddrinit
