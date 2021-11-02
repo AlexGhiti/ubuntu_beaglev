@@ -4,6 +4,7 @@ image_name="$1"
 image_size=4290755584  # 4289690112 #3752819200 #3758096384
 
 rootfs_path="$2"
+cidata_path="$3"
 
 create_empty_disk_image() {
     # Prepare an empty disk image
@@ -108,14 +109,12 @@ cidata_dev="/dev/mapper/${loop_p1%%[0-9]}$cidata_part"
 uefi_dev="/dev/mapper/${loop_p1%%[0-9]}$uefi_part"
 
 # Re-generate initrd
-create_initrd $rootfs_path "/mnt/jammy.rootfs" "/home/alex/work/beaglev/linux/build_starlight_ubuntu" "5.15.0-rc7-starlight+" "5.13.0-1004-generic"
-
-exit 0
+create_initrd $rootfs_path "/mnt/jammy.rootfs" "/home/alex/work/beaglev/riscv-linux/build_starlight_ubuntu" "5.15.0-rc7-starlight+" "5.13.0-1004-generic"
 
 dd if=$rootfs_path of="$rootfs_dev"
 #resize2fs "$rootfs_dev"
 dd if=u-boot/u-boot.itb of="$u_boot_dev"
-dd if=rootfs/jammy.cidata of="$cidata_dev"
+dd if=$cidata_path of="$cidata_dev"
 mkfs.vfat -F 32 -n UEFI "$uefi_dev"
 
 kpartx -ds "$disk_image"
