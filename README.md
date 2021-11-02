@@ -1,7 +1,6 @@
-Build
------
+# Build
 
-#. Build JH7100_ddrinit: alex/int/alex/spl
+1. Build JH7100_ddrinit: alex/int/alex/spl
 
 Download an elf toolchain from SiFive
 
@@ -10,11 +9,11 @@ Download an elf toolchain from SiFive
 
 To flash this new firmware, at the BeagleV boot, press "[ECHAP]", enter "root@s5t" and select "update ddr init firmware", use minicom xsend functionality to send the file.
 
-#. Build OpenSBI: origin/master
+2. Build OpenSBI: origin/master
 
 	$ make PLATFORM=generic CROSS_COMPILE=riscv64-linux-gnu-
 
-#. Build u-boot SPL and u-boot: alex/int/alex/spl_support
+3. Build u-boot SPL and u-boot: alex/int/alex/spl_support
 
 	$ make starfive_jh7100_starlight_smode_defconfig
 	$ OPENSBI=/home/alex/work/opensbi/build/platform/generic/firmware/fw_dynamic.bin make -j8 CROSS_COMPILE=riscv64-linux-gnu-
@@ -27,13 +26,13 @@ To flash this new firmware, at the BeagleV boot, press "[ECHAP]", enter "root@s5
 To flash u-boot SPL, at the BeagleV boot, press "[ECHAP]", select "update u-boot", use minicom xsend functionality to send the file.
 You will never have to update those firmwares now :)
 
-#. Build Linux: alex/int/alex/beaglev
+4. Build Linux: alex/int/alex/beaglev
 
 	$ make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- CC="ccache riscv64-linux-gnu-gcc" -j8 starlight_ubuntu_defconfig O=build_starlight_ubuntu
 	$ cd build_starlight_ubuntu
 	$ make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- CC="ccache riscv64-linux-gnu-gcc" -j8
 
-#. Extract rootfs/CIDATA from unmatched jammy image: https://cdimage.ubuntu.com/ubuntu-server/daily-preinstalled/pending/jammy-preinstalled-server-riscv64+unmatched.img.xz
+5. Extract rootfs/CIDATA from unmatched jammy image: https://cdimage.ubuntu.com/ubuntu-server/daily-preinstalled/pending/jammy-preinstalled-server-riscv64+unmatched.img.xz
 
 	$ sudo kpartx -a -v jammy-preinstalled-server-riscv64+unmatched.img
 	$ sudo dd if=/dev/mapper/loopXXp1 of=jammy.rootfs
@@ -41,20 +40,34 @@ You will never have to update those firmwares now :)
 
 TODO there must more natural way of doing this.
 
-#. Create sdcard image
+6. Update rootfs with new Linux Kernel, create initrd for it and create the sdcard image
 
-	$ sudo bash create_disk_image.sh sdcard.img jammy.rootfs
+	a. First we need to update the rootfs, launch scripts/my_script.sh that contains your path:
 
-#. Create initrd from a VM...otherwise it fails totally from a qemu user emulated chroot...
+		$ bash my_script.sh
 
-Send jammy.rootfs modified by create_disk_image.sh to a VM and then launch from the VM:
+	This will update in-place the rootfs and wait for the initrd to be created from the VM.
 
-	$ sudo mount jammy.rootfs /mnt
-	$ sudo chroot /mnt update-initramfs -c -k "5.15.0-rc7-starlight+"
+	b. Create the initrd from a VM (otherwise it fails totally from a qemu user emulated chroot...)
 
-#. Update extlinux.conf with new kernel
+	Send the updated rootfs to a VM and then launch from the VM:
 
-#. Retrieve this rootfs and write it to the sdcard.img
+		$ sudo mount $rootfs /mnt
+		$ sudo mount -o bind /proc /mnt/proc
+		$ sudo mount -o bind /sys /mnt/sys
+		$ sudo mount -o bind /dev /mnt/dev
+		$ sudo chroot /mnt update-initramfs -c -k "5.15.0-rc7-starlight+"
+		$ sudo chroot /mnt u-boot-update
+		$ sudo umount /mnt/proc
+		$ sudo umount /mnt/sys
+		$ sudo umount /mnt/dev
+		$ sudo umount /mnt
+
+	c. Retrieve the updated rootfs on the host at the same location and press a key, this will create the sdcard image.
+
+7. Flash the sdcard image on a sdcard
+
+	$ sudo dd if=$sdcardimage of=/dev/mmcblk0
 
 Notes
 =====

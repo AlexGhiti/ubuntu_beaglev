@@ -1,12 +1,13 @@
 #!/bin/bash
 
 image_name="$1"
-image_size=4290755584  # 4289690112 #3752819200 #3758096384
-
-rootfs_path="$2"
+rootfs_path="$2" # it will get modified in-place
 cidata_path="$3"
+uboot_path="$4"
 
-create_empty_disk_image() {
+image_size=4290755584
+
+create_empty_image_name() {
     # Prepare an empty disk image
     dd if=/dev/zero of="$1" bs=1 count=0 seek="${image_size}"
 }
@@ -38,83 +39,45 @@ mount_image() {
     return 0
 }
 
-create_initrd()
-{
-    rootfs="$1"
-    mount_dir="$2"
-    kernel_build_dir="$3"
-    kernel_version="$4"
-    old_kernel_version="$5"
-
-    mkdir -p $mount_dir
-    mount $rootfs $mount_dir
-
-    # Clear previous kernel
-    rm -rf $mount_dir/boot/config-$old_kernel_version
-    rm -rf $mount_dir/boot/initrd.img-$old_kernel_version
-    rm -rf $mount_dir/boot/vmlinuz-$old_kernel_version
-    rm -rf $mount_dir/boot/System.map-$old_kernel_version
-    rm -rf $mount_dir/lib/modules/$old_kernel_version
-    rm -rf $mount_dir/lib/firmware/$old_kernel_version
-
-    # Copy new one
-    rsync -av $kernel_build_dir/debian/linux-image/boot/ $mount_dir/boot/
-    # strip the modules!
-    find $kernel_build_dir/debian/linux-image/lib/modules/$kernel_version -name *.ko -exec riscv64-linux-gnu-strip --strip-unneeded {} +
-    rsync -av $kernel_build_dir/debian/linux-image/lib/modules/$kernel_version $mount_dir/lib/modules/
-    mkdir -p $mount_dir/lib/firmware/$kernel_version/device-tree/
-    # TODO that's dirty, it copies all temp files
-    rsync -av $kernel_build_dir/arch/riscv/boot/dts/ $mount_dir/lib/firmware/$kernel_version/device-tree/
-
-    mount -o bind /proc $mount_dir/proc
-    mount -o bind /sys  $mount_dir/sys
-    mount -o bind /dev  $mount_dir/dev
-    #chroot $mount_dir /bin/bash -c "update-initramfs -c -t -k \"$kernel_version\""
-    #chroot $mount_dir u-boot-update # to update extlinux.conf
-    umount $mount_dir/proc
-    umount $mount_dir/sys
-    umount $mount_dir/dev
-    sync
-    umount $rootfs
-}
-
-disk_image="$image_name"
-
-rm -f "$disk_image"
-create_empty_disk_image "$disk_image"
-#sgdisk --zap-all "$disk_image"
+rm -f "$image_name"
+create_empty_image_name "$image_name"
+#sgdisk --zap-all "$image_name"
 
 rootfs_part="1"
 cidata_part="12"
 u_boot_part="14"
 uefi_part="15"
 
-sgdisk "${disk_image}"\
-    --set-alignment=2\
-    --new=$u_boot_part:2048:10239\
-    --change-name=$u_boot_part:loader2\
-    --typecode=$u_boot_part:ef02\
-    --new=$uefi_part:10240:219135\
-    --typecode=$uefi_part:ef00\
-    --new=$cidata_part:219136:227327\
-    --change-name=$cidata_part:CIDATA\
-    --new=$rootfs_part::\
+sgdisk "${image_name}" \
+    --set-alignment=2 \
+    --new=$u_boot_part:2048:10239 \
+    --change-name=$u_boot_part:loader2 \
+    --typecode=$u_boot_part:ef02 \
+    --new=$uefi_part:10240:219135 \
+    --typecode=$uefi_part:ef00 \
+    --new=$cidata_part:219136:227327 \
+    --change-name=$cidata_part:CIDATA \
+    --new=$rootfs_part:: \
     --attributes=$rootfs_part:set:2
 
-mount_image "$disk_image" "$rootfs_part"
+mount_image "$image_name" "$rootfs_part"
 
 rootfs_dev="/dev/mapper/${loop_p1%%[0-9]}$rootfs_part"
 u_boot_dev="/dev/mapper/${loop_p1%%[0-9]}$u_boot_part"
 cidata_dev="/dev/mapper/${loop_p1%%[0-9]}$cidata_part"
 uefi_dev="/dev/mapper/${loop_p1%%[0-9]}$uefi_part"
 
-# Re-generate initrd
-create_initrd $rootfs_path "/mnt/jammy.rootfs" "/home/alex/work/beaglev/riscv-linux/build_starlight_ubuntu" "5.15.0-rc7-starlight+" "5.13.0-1004-generic"
-
-dd if=$rootfs_path of="$rootfs_dev"
-#resize2fs "$rootfs_dev"
-dd if=u-boot/u-boot.itb of="$u_boot_dev"
+dd if=$uboot_path of="$u_boot_dev"
 dd if=$cidata_path of="$cidata_dev"
 mkfs.vfat -F 32 -n UEFI "$uefi_dev"
+# rootfs
+mkfs.ext4 -F -b 4096 -i 8192 -m 0 -L "cloudimg-rootfs" -E resize=536870912 "$rootfs_dev"
+mkdir -p /tmp/mnt_rootfs
+mount $rootfs_path /tmp/mnt_rootfs
+mkdir -p /tmp/mnt_dev_rootfs
+mount $rootfs_dev /tmp/mnt_dev_rootfs
+cp -a /tmp/mnt_rootfs/* /tmp/mnt_dev_rootfs/
+umount /tmp/mnt_rootfs
+umount /tmp/mnt_dev_rootfs
 
-kpartx -ds "$disk_image"
+kpartx -ds "$image_name"
