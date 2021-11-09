@@ -6,12 +6,11 @@ To update the SPI flash firmwares, prepare the FTDI following the instructions f
 
 [1] https://bootlin.com/blog/buildroot-beagle-v/
 
-1. Install `JH7100_ddrinit` firmware:
+## 1. Install `JH7100_ddrinit` firmware:
 
 You can either download a pre-built version https://github.com/AlexGhiti/JH7100_ddrinit/releases/tag/ubuntu_beaglev or build it using the following instructions:
 
-Build
------
+### Build
 
 Download an elf toolchain from SiFive: https://github.com/sifive/freedom-tools/releases
 
@@ -20,8 +19,7 @@ Download an elf toolchain from SiFive: https://github.com/sifive/freedom-tools/r
 	$ PATH=$TOOLCHAIN_PATH/bin/:$PATH make
 
 
-Flash
------
+### Flash
 
 To flash this new firmware, at the BeagleV boot, press any key before the 2 seconds countdown end.
 The following menu will appear:
@@ -49,7 +47,7 @@ enter "root@s5t" and the following menu will appear:
 Select "update ddr init firmware" and use minicom xsend functionality to send the file named "ddrinit-2133-XXXXXX.bin.out" which is in the `build` directory.
 
 
-2. u-boot SPL flash
+## 2. u-boot SPL flash
 
 Reboot the board and enter the flash programming menu:
 
@@ -66,7 +64,7 @@ Reboot the board and enter the flash programming menu:
 Select "update uboot" and use minicom xsend functionality to send the file named "".
 
 
-3. Flash the Ubuntu image on the sdcard
+## 3. Flash the Ubuntu image on the sdcard
 
 Download the Ubuntu image from [1] and flash it on your sdcard using:
 
