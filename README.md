@@ -15,7 +15,8 @@ You can either download a pre-built version https://github.com/AlexGhiti/JH7100_
 Download an elf toolchain from SiFive: https://github.com/sifive/freedom-tools/releases
 
 
-	$ cd build
+	$ git clone https://github.com/AlexGhiti/JH7100_ddrinit --branch=int/alex/spl
+	$ cd JH7100_ddrinit/build
 	$ PATH=$TOOLCHAIN_PATH/bin/:$PATH make
 
 
@@ -49,6 +50,27 @@ Select "update ddr init firmware" and use minicom xsend functionality to send th
 
 ## 2. u-boot SPL flash
 
+You can either download a pre-built version here https://github.com/AlexGhiti/u-boot/releases/tag/ubuntu_beaglev_v1 or build it using the following instructions:
+
+### Build
+
+
+	$ git clone https://github.com/AlexGhiti/u-boot --branch=int/alex/spl_support
+	$ cd u-boot
+	$ make starfive_jh7100_starlight_smode_defconfig
+	$ make -j8 CROSS_COMPILE=riscv64-linux-gnu-
+
+
+We don't need openSBI binary for SPL so you can ignore the following warning:
+
+
+	Image 'main-section' is missing external blobs and is non-functional: opensbi
+
+	Some images are invalid
+
+
+### Flash
+
 Reboot the board and enter the flash programming menu:
 
 
@@ -61,7 +83,7 @@ Reboot the board and enter the flash programming menu:
 	select the function:
 
 
-Select "update uboot" and use minicom xsend functionality to send the file named "".
+Select "update uboot" and use minicom xsend functionality to send the file named "u-boot-spl-dtb.bin.out".
 
 
 ## 3. Flash the Ubuntu image on the sdcard
@@ -73,3 +95,5 @@ Download the Ubuntu image from [1] and flash it on your sdcard using:
 
 
 Insert the sdcard and then enjoy using Ubuntu on the BeagleV :)
+
+[1]: 
