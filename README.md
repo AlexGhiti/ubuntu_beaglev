@@ -6,14 +6,22 @@ To update the SPI flash firmwares, prepare the FTDI following the instructions f
 
 [1] https://bootlin.com/blog/buildroot-beagle-v/
 
-1. Build `JH7100_ddrinit`: alex/int/alex/spl
+1. Install `JH7100_ddrinit` firmware:
 
-Download an elf toolchain from SiFive
+You can either download a pre-built version https://github.com/AlexGhiti/JH7100_ddrinit/releases/tag/ubuntu_beaglev or build it using the following instructions:
+
+Build
+-----
+
+Download an elf toolchain from SiFive: https://github.com/sifive/freedom-tools/releases
 
 
 	$ cd build
 	$ PATH=$TOOLCHAIN_PATH/bin/:$PATH make
 
+
+Flash
+-----
 
 To flash this new firmware, at the BeagleV boot, press any key before the 2 seconds countdown end.
 The following menu will appear:
