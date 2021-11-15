@@ -8,7 +8,7 @@ To update the SPI flash firmwares, prepare the FTDI following the instructions f
 
 ## 1. Install `JH7100_ddrinit` firmware:
 
-You can either download a pre-built version https://github.com/AlexGhiti/JH7100_ddrinit/releases/tag/ubuntu_beaglev or build it using the following instructions:
+You can either download a pre-built version https://github.com/AlexGhiti/JH7100_ddrinit/releases/tag/ubuntu_beaglev_v1 or build it using the following instructions:
 
 ### Build
 
