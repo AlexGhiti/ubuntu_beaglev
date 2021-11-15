@@ -20,7 +20,7 @@ Download an [elf toolchain from SiFive](https://github.com/sifive/freedom-tools/
 
 ### Flash
 
-To flash this new firmware, at the BeagleV boot, press any key before the 2 seconds countdown end.
+To flash this new firmware, at the BeagleV boot, press any key before the 2 seconds countdown ends.
 The following menu will appear:
 
 
@@ -33,7 +33,7 @@ The following menu will appear:
 	select the function:
 
 
-enter "root@s5t" and the following menu will appear:
+enter `root@s5t` and the following menu will appear:
 
 
 	0:update second boot
@@ -43,7 +43,7 @@ enter "root@s5t" and the following menu will appear:
 	select the function:
 
 
-Select "update ddr init firmware" and use minicom xsend functionality to send the file named "ddrinit-2133-XXXXXX.bin.out" which is in the `build` directory.
+Select `update ddr init boot` and use minicom xsend functionality to send the file named `ddrinit-2133-XXXXXX.bin.out` that you have just downloaded or which is in the `build` directory if you built it yourself.
 
 
 ## 2. u-boot SPL flash
