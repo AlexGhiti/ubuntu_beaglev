@@ -1,20 +1,16 @@
 # Ubuntu install
 
-First, we will flash the necessary firmwares in the SPI flash: `ddrinit` and `u-boot SPL`. Those two firmwares likely won't require any updates as their only job is to pass control to `u-boot/openSBI` that are resident on the sdcard and that will certainly require fixes and updates. In the Ubuntu image, we decided to have them on the sdcard so that they can be updated automatically when upgrading the `u-boot-starfive` [1] package, so that you won't have to plug your FTDI in again.
+First, we will flash the necessary firmwares in the SPI flash: `ddrinit` and `u-boot SPL`. Those two firmwares likely won't require any updates as their only job is to pass control to `u-boot/openSBI` that are resident on the sdcard and that will certainly require fixes and updates. In the Ubuntu image, we decided to have them on the sdcard so that they can be updated automatically when upgrading the `u-boot-starfive` ([An initial version can be found in my PPA](https://launchpad.net/~alexghiti/+archive/ubuntu/riscv/+files/u-boot-starfive_2021.10-starlight-ge77cc7b-0ubuntu1-ppa0_riscv64.deb)) package, so that you won't have to plug your FTDI in again.
 
-To update the SPI flash firmwares, prepare the FTDI following the instructions from [2] section "Preparing the board".
-
-[1] An initial version can be found in my PPA: https://launchpad.net/~alexghiti/+archive/ubuntu/riscv/+files/u-boot-starfive_2021.10-starlight-ge77cc7b-0ubuntu1-ppa0_riscv64.deb
-
-[2] https://bootlin.com/blog/buildroot-beagle-v/
+To update the SPI flash firmwares, prepare the FTDI following [the instructions](https://bootlin.com/blog/buildroot-beagle-v/) section "Preparing the board".
 
 ## 1. Install `JH7100_ddrinit` firmware:
 
-You can either download a pre-built version https://github.com/AlexGhiti/JH7100_ddrinit/releases/tag/ubuntu_beaglev_v1 or build it using the following instructions:
+You can either download a [pre-built version](https://github.com/AlexGhiti/JH7100_ddrinit/releases/tag/ubuntu_beaglev_v1) or build it using the following instructions:
 
 ### Build
 
-Download an elf toolchain from SiFive: https://github.com/sifive/freedom-tools/releases
+Download an [elf toolchain from SiFive](https://github.com/sifive/freedom-tools/releases) and then:
 
 
 	$ git clone https://github.com/AlexGhiti/JH7100_ddrinit --branch=int/alex/spl
@@ -52,7 +48,7 @@ Select "update ddr init firmware" and use minicom xsend functionality to send th
 
 ## 2. u-boot SPL flash
 
-You can either download a pre-built version here https://github.com/AlexGhiti/u-boot/releases/tag/ubuntu_beaglev_v1 or build it using the following instructions:
+You can either download a [pre-built version](https://github.com/AlexGhiti/u-boot/releases/tag/ubuntu_beaglev_v1) or build it using the following instructions:
 
 ### Build
 
@@ -90,12 +86,10 @@ Select "update uboot" and use minicom xsend functionality to send the file named
 
 ## 3. Flash the Ubuntu image on the sdcard
 
-Download the Ubuntu image from [1] and flash it on your sdcard using:
+Download the [Ubuntu image](https://drive.google.com/file/d/1fQsCzH1mVLc4c2cU4hgai2PlnNMpLpbD/view?usp=sharing) and flash it on your sdcard using:
 
 
-	$ dd if=XXX.img of=/dev/YOUR_SDCARD_BLOCK_DEVICE
+	$ dd if=ubuntu_beaglev.img of=/dev/YOUR_SDCARD_BLOCK_DEVICE
 
 
 Insert the sdcard and then enjoy using Ubuntu on the BeagleV :)
-
-[1]: 
