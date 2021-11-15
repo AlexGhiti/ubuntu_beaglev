@@ -81,8 +81,7 @@ Reboot the board and enter the flash programming menu:
 	select the function:
 
 
-Select "update uboot" and use minicom xsend functionality to send the file named "u-boot-spl-dtb.bin.out".
-
+Select `update uboot` and use minicom xsend functionality to send the file named `u-boot-spl-dtb.bin.out`.
 
 ## 3. Flash the Ubuntu image on the sdcard
 
