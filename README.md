@@ -1,10 +1,12 @@
 # Ubuntu install
 
-First, we will flash the necessary firmwares in the SPI flash: `ddrinit` and `u-boot SPL`. Those two firmwares likely won't require any updates as their only job is to pass control to `u-boot/openSBI` that are resident on the sdcard and that will certainly require fixes and updates. In the Ubuntu image, we decided to have them on the sdcard so that they can be updated automatically when upgrading the `u-boot-starfive` package, so that you won't ever have to to plug your FTDI in.
+First, we will flash the necessary firmwares in the SPI flash: `ddrinit` and `u-boot SPL`. Those two firmwares likely won't require any updates as their only job is to pass control to `u-boot/openSBI` that are resident on the sdcard and that will certainly require fixes and updates. In the Ubuntu image, we decided to have them on the sdcard so that they can be updated automatically when upgrading the `u-boot-starfive` [1] package, so that you won't have to plug your FTDI in again.
 
-To update the SPI flash firmwares, prepare the FTDI following the instructions from [1] section "Preparing the board".
+To update the SPI flash firmwares, prepare the FTDI following the instructions from [2] section "Preparing the board".
 
-[1] https://bootlin.com/blog/buildroot-beagle-v/
+[1] An initial version can be found in my PPA: https://launchpad.net/~alexghiti/+archive/ubuntu/riscv/+files/u-boot-starfive_2021.10-starlight-ge77cc7b-0ubuntu1-ppa0_riscv64.deb
+
+[2] https://bootlin.com/blog/buildroot-beagle-v/
 
 ## 1. Install `JH7100_ddrinit` firmware:
 
